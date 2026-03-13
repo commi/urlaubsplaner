@@ -1,0 +1,19 @@
+:host {
+  grid-area: nav;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.25rem;
+  height: 54px;
+  background: var(--up-surface-1);
+  border-bottom: 1px solid var(--up-border);
+  flex-shrink: 0;
+}
+
+.brand {
+  font-size: 1.05rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  i { font-size: 1.2rem; }
+}

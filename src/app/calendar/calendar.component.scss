@@ -1,0 +1,47 @@
+:host {
+  grid-area: cal;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--up-bg);
+  padding: 1rem 1.25rem;
+  gap: 1rem;
+  position: relative;   // Anker für absolut positionierten Hint
+}
+
+.selection-hint {
+  position: absolute;
+  top: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  white-space: nowrap;
+
+  // Aussehen via BS-kompatible Tokens
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--up-accent);
+  background: color-mix(in oklch, var(--up-surface-1) 90%, var(--up-accent));
+  border: 1px solid color-mix(in oklch, var(--up-accent) 40%, transparent);
+  border-radius: 20px;
+  padding: 0.2rem 0.75rem 0.2rem 0.5rem;
+  box-shadow: 0 2px 12px color-mix(in oklch, var(--up-accent) 20%, transparent);
+  pointer-events: auto;
+}
+
+.monate-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem 1rem;
+  flex: 1;
+}
+
+@media (max-width: 1400px) {
+  .monate-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 1023px) {
+  .monate-grid { grid-template-columns: repeat(2, 1fr); }
+}

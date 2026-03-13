@@ -1,0 +1,153 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.month-title {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0 2px 4px;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+
+  span {
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--up-text-muted);
+    padding: 2px 0;
+
+    &:nth-child(6),
+    &:nth-child(7) {
+      color: color-mix(in oklch, var(--up-text-muted) 60%, var(--up-accent));
+    }
+  }
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+
+  // CSS-Offset für ersten Wochentag
+  & > .day:first-child {
+    grid-column-start: calc(var(--offset, 0) + 1);
+  }
+}
+
+.day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--up-text);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.1s;
+  user-select: none;
+
+  &:hover:not(.urlaub) {
+    background: var(--up-surface-3);
+  }
+
+  &.wochenende {
+    color: var(--up-text-muted);
+  }
+
+  &.heute {
+    outline: 1.5px solid var(--up-accent);
+    outline-offset: -1px;
+
+    .tag-zahl {
+      color: var(--up-accent);
+      font-weight: 700;
+    }
+  }
+
+  &.feiertag {
+    background: color-mix(in oklch, var(--up-amber) 12%, transparent);
+    color: var(--up-amber);
+
+    // Feiertag fällt auf Wochenende → zählt nicht, blasser darstellen
+    &.wochenende:not(.urlaub) {
+      background: color-mix(in oklch, var(--up-amber) 5%, transparent);
+      color: color-mix(in oklch, var(--up-amber) 35%, var(--up-text-muted));
+    }
+  }
+
+  &.sondertag {
+    background: color-mix(in oklch, var(--up-text-muted) 8%, transparent);
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--up-amber);
+    }
+  }
+
+  // Segment-Farben
+  &.urlaub {
+    background: var(--seg-color);
+    color: white;
+    border-radius: 0;
+
+    &.urlaub-anfang { border-radius: 5px 0 0 5px; }
+    &.urlaub-ende   { border-radius: 0 5px 5px 0; }
+    &.urlaub-solo   { border-radius: 5px; }
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+
+  // Auswahl (Vorschau)
+  &.auswahl {
+    background: color-mix(in oklch, var(--up-accent) 25%, transparent);
+    color: var(--up-text);
+    border-radius: 0;
+
+    &.auswahl-anfang { border-radius: 5px 0 0 5px; }
+    &.auswahl-ende   { border-radius: 0 5px 5px 0; }
+    &.auswahl-solo   { border-radius: 5px; }
+
+    // Starttag: ausgefüllt + Puls-Ring
+    &.auswahl-solo {
+      background: var(--up-accent);
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--up-accent) 35%, transparent);
+    }
+  }
+}
+
+.tag-zahl {
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+.feiertag-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--up-amber);
+}

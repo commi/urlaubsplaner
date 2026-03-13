@@ -1,0 +1,69 @@
+# Angular
+/.angular/cache
+/out-tsc
+/bazel-out
+
+# Build output
+/dist
+/tmp
+
+# Node
+/node_modules
+npm-debug.log
+npm-debug.log.*
+yarn-error.log
+yarn-debug.log.*
+.pnpm-debug.log.*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+
+# Testing & coverage
+/coverage
+testem.log
+__screenshots__/
+
+# IDEs - shared config is committed, private state is not
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# Sass cache
+.sass-cache/
+*.css.map
+*.sass.cache
+
+# Miscellaneous
+/connect.lock
+/libpeerconnection.log
+/typings
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# TypeScript incremental compilation
+*.tsbuildinfo
