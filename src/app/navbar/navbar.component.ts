@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppState } from '../core/types';
 import { REGIONEN } from '../core/constants';
@@ -23,8 +23,8 @@ import { REGIONEN } from '../core/constants';
           type="number"
           min="1"
           max="60"
-          [ngModel]="formWert.kontingent"
-          (ngModelChange)="onKontingentChange($event)">
+          [ngModel]="state.kontingent"
+          (ngModelChange)="arbeitsvertragChange.emit({ kontingent: +$event })">
       </div>
 
       <div class="d-flex align-items-center gap-2">
@@ -36,8 +36,8 @@ import { REGIONEN } from '../core/constants';
           type="number"
           min="2020"
           max="2035"
-          [ngModel]="formWert.jahr"
-          (ngModelChange)="onJahrChange($event)">
+          [ngModel]="state.jahr"
+          (ngModelChange)="arbeitsvertragChange.emit({ jahr: +$event })">
       </div>
 
       <div class="d-flex align-items-center gap-2">
@@ -46,8 +46,8 @@ import { REGIONEN } from '../core/constants';
           id="region"
           class="form-select form-select-sm"
           style="width: 180px"
-          [ngModel]="formWert.region"
-          (ngModelChange)="onRegionChange($event)">
+          [ngModel]="state.region"
+          (ngModelChange)="arbeitsvertragChange.emit({ region: $event })">
           @for (r of regionen; track r.value) {
             <option [value]="r.value">{{ r.label }}</option>
           }
@@ -57,34 +57,9 @@ import { REGIONEN } from '../core/constants';
   `,
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   @Input() state!: AppState;
   @Output() arbeitsvertragChange = new EventEmitter<Partial<Pick<AppState, 'kontingent' | 'region' | 'jahr'>>>();
 
   readonly regionen = REGIONEN;
-
-  formWert = { kontingent: 30, region: 'DE-NW', jahr: new Date().getFullYear() };
-
-  ngOnInit(): void {
-    this.formWert = {
-      kontingent: this.state.kontingent,
-      region:     this.state.region,
-      jahr:       this.state.jahr,
-    };
-  }
-
-  onKontingentChange(val: number): void {
-    this.formWert = { ...this.formWert, kontingent: val };
-    this.arbeitsvertragChange.emit({ kontingent: Number(val) });
-  }
-
-  onJahrChange(val: number): void {
-    this.formWert = { ...this.formWert, jahr: val };
-    this.arbeitsvertragChange.emit({ jahr: Number(val) });
-  }
-
-  onRegionChange(val: string): void {
-    this.formWert = { ...this.formWert, region: val };
-    this.arbeitsvertragChange.emit({ region: val });
-  }
 }

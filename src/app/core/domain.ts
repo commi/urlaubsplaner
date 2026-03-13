@@ -174,8 +174,18 @@ export function getFirmenregel(d: Date, firmenregeln: Firmenregel[]): Firmenrege
 
 
 export function calcSegment(segment: Segment, jahr: number, region: string, firmenregeln: Firmenregel[]): Segmentstats {
+  // Segment auf das angezeigte Jahr beschränken
+  const jahrStart = `${jahr}-01-01`;
+  const jahrEnd   = `${jahr}-12-31`;
+  const start = segment.start < jahrStart ? jahrStart : segment.start;
+  const end   = segment.end   > jahrEnd   ? jahrEnd   : segment.end;
+
+  if (start > end) {
+    return { kalendertage: 0, wochenendtage: 0, feiertage: 0, halbeTage: 0, urlaubstage: 0 };
+  }
+
   const feiertage = getHolidays(jahr, region);
-  const tage = daysInRange(segment.start, segment.end);
+  const tage = daysInRange(start, end);
 
   let kalendertage  = 0;
   let wochenendtage = 0;

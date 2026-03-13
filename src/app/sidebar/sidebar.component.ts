@@ -133,7 +133,11 @@ export class SidebarComponent implements OnChanges {
   }
 
   get sortierteSzenarienSegmente(): Segment[] {
-    return [...(this.aktiveSzenario?.segmente ?? [])].sort((a, b) => a.start.localeCompare(b.start));
+    const jahrStart = `${this.state.jahr}-01-01`;
+    const jahrEnd   = `${this.state.jahr}-12-31`;
+    return [...(this.aktiveSzenario?.segmente ?? [])]
+      .filter(s => s.start <= jahrEnd && s.end >= jahrStart)
+      .sort((a, b) => a.start.localeCompare(b.start));
   }
 
   getSegStats(seg: Segment): Segmentstats | null {
