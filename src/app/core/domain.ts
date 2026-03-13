@@ -98,6 +98,7 @@ export function getHolidays(jahr: number, region: string): Map<string, string> {
   // Bundesweit 
   add(D(1,  1),  'Neujahr');
   add(karfreitag,    'Karfreitag');
+  add(addTage(ostern, 0), 'Ostersonntag');
   add(addTage(ostern, 1), 'Ostermontag');
   add(D(5,  1),  'Tag der Arbeit');
   add(himmelfahrt,   'Christi Himmelfahrt');
@@ -203,7 +204,7 @@ export function calcSegment(segment: Segment, jahr: number, region: string, firm
     const regel = getFirmenregel(d, firmenregeln);
     if (regel) {
       halbeTage++;
-      urlaubstage += regel.freierAnteil;
+      urlaubstage += Math.max(0, 1 - regel.freierAnteil); // freierAnteil=1→0 Tage, 0.5→0.5 Tage, 0→1 Tag
       continue;
     }
 

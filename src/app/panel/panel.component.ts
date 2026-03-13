@@ -95,16 +95,33 @@ import { LOCALE, MONAT_LABELS } from '../core/constants';
               min="1" max="31" [value]="r.tag"
               (change)="firmenregelUpdate.emit({ id: r.id, patch: { tag: +$any($event.target).value } })">
 
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary"
-                [class.active]="r.freierAnteil === 0.5"
-                (click)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 0.5 } })">½ Tag</button>
-              <button class="btn btn-outline-secondary"
-                [class.active]="r.freierAnteil === 1.0"
-                (click)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 1.0 } })">Ganztag</button>
+            <div class="btn-group btn-group-sm" role="group">
+              <input type="radio" class="btn-check" autocomplete="off"
+                [name]="'fa-' + r.id" [id]="'fa1-' + r.id" [value]="1"
+                [ngModel]="r.freierAnteil"
+                (ngModelChange)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 1 } })"
+                title="Ganzer Tag frei - kein Urlaubstag nötig">
+              <label class="btn btn-outline-secondary" [for]="'fa1-' + r.id"
+                title="Ganzer Tag frei - kein Urlaubstag nötig">Frei</label>
+
+              <input type="radio" class="btn-check" autocomplete="off"
+                [name]="'fa-' + r.id" [id]="'fa05-' + r.id" [value]="0.5"
+                [ngModel]="r.freierAnteil"
+                (ngModelChange)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 0.5 } })"
+                title="Halber Tag frei - ½ Urlaubstag nötig wenn Pflicht">
+              <label class="btn btn-outline-secondary" [for]="'fa05-' + r.id"
+                title="Halber Tag frei - ½ Urlaubstag nötig wenn Pflicht">½ Tag</label>
+
+              <input type="radio" class="btn-check" autocomplete="off"
+                [name]="'fa-' + r.id" [id]="'fa0-' + r.id" [value]="0"
+                [ngModel]="r.freierAnteil"
+                (ngModelChange)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 0 } })"
+                title="Kein freier Anteil - voller Urlaubstag nötig wenn Pflicht">
+              <label class="btn btn-outline-secondary" [for]="'fa0-' + r.id"
+                title="Kein freier Anteil - voller Urlaubstag nötig wenn Pflicht">1 Tag</label>
             </div>
 
-            <div class="form-check form-switch mb-0" title="Pflichturlaub — Urlaubstage werden abgezogen">
+            <div class="form-check form-switch mb-0" title="Pflichturlaub, Urlaubstage werden abgezogen wenn nötig">
               <input class="form-check-input" type="checkbox" role="switch"
                 [id]="'pflicht-' + r.id"
                 [checked]="r.pflichturlaub"
