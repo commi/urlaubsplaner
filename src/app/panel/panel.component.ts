@@ -37,7 +37,7 @@ import { LOCALE, MONAT_LABELS } from '../core/constants';
         </div>
       </div>
 
-      <div class="mb-1">
+      <div class="mb-1 d-print-none">
         <div class="d-flex justify-content-between small text-secondary mb-1">
           <span>Kontingent</span>
           <span class="font-monospace">{{ totals.urlaubstage | number:'1.0-1' }} / {{ state.kontingent }}</span>
@@ -54,14 +54,14 @@ import { LOCALE, MONAT_LABELS } from '../core/constants';
     }
 
     <!-- Firmenregeln -->
-    <div class="panel-subtitle d-flex align-items-center justify-content-between">
+    <div class="panel-subtitle d-flex d-print-none align-items-center justify-content-between">
       <span>Sondertage</span>
       <button class="icon-btn sm" title="Sondertag hinzufügen" (click)="firmenregelAdd.emit()">
         <i class="bi bi-plus-lg"></i>
       </button>
     </div>
 
-    <div class="d-flex flex-column gap-1">
+    <div class="d-flex d-print-none flex-column gap-1">
       @for (r of state.firmenregeln; track r.id) {
         <div class="regel-item" [class.uncovered]="nichtAbgedeckt.has(r.id)">
 
@@ -154,7 +154,7 @@ import { LOCALE, MONAT_LABELS } from '../core/constants';
     </div>
 
     <!-- Aktionen -->
-    <div class="actions">
+    <div class="actions d-print-none">
       <button class="action-btn" (click)="export.emit()">
         <i class="bi bi-download"></i> Exportieren
       </button>

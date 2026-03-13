@@ -18,3 +18,30 @@
       "cal";
   }
 }
+
+//  Druck
+@media print {
+  :host {
+    display: block;
+    height: auto;
+  }
+
+  up-calendar {
+    clear: both;
+  }
+  up-sidebar {
+    float: left;
+  }
+  up-panel {
+    float: right;
+  }
+
+  up-calendar,
+  up-sidebar,
+  up-panel {
+    display: block;
+    overflow: visible;
+    border: none;
+    padding: 0.5rem 0;
+  }
+}

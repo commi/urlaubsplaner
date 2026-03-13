@@ -10,39 +10,41 @@ import { LOCALE } from '../core/constants';
   imports: [DecimalPipe],
   template: `
     <!-- Szenarien -->
-    <div class="section-label d-flex align-items-center justify-content-between text-body-secondary text-uppercase border-bottom">
-      <span>Szenarien</span>
-      <button class="icon-btn" title="Neues Szenario"
-        (click)="szenarioAdd.emit('Szenario ' + (state.szenarien.length + 1))">
-        <i class="bi bi-plus-lg"></i>
-      </button>
-    </div>
+    <div class="d-print-none">
+      <div class="section-label d-flex align-items-center justify-content-between text-body-secondary text-uppercase border-bottom">
+        <span>Szenarien</span>
+        <button class="icon-btn" title="Neues Szenario"
+          (click)="szenarioAdd.emit('Szenario ' + (state.szenarien.length + 1))">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
 
-    <div class="d-flex flex-column gap-1">
-      @for (sz of state.szenarien; track sz.id) {
-        <div class="szenario-item" [class.active]="sz.id === state.aktiveSzenarioId">
-          <input
-            class="szenario-name-input"
-            [value]="sz.name"
-            (focus)="szenarioSelect.emit(sz.id)"
-            (change)="szenarioRename.emit({ id: sz.id, name: $any($event.target).value })"
-            (keydown.enter)="$any($event.target).blur()">
-          <div class="szenario-actions">
-            <button class="icon-btn sm" title="Duplizieren"
-              (mousedown)="$event.preventDefault()"
-              (click)="szenarioDuplicate.emit(sz.id)">
-              <i class="bi bi-copy"></i>
-            </button>
-            @if (state.szenarien.length > 1) {
-              <button class="icon-btn sm danger" title="Löschen"
+      <div class="d-flex flex-column gap-1">
+        @for (sz of state.szenarien; track sz.id) {
+          <div class="szenario-item" [class.active]="sz.id === state.aktiveSzenarioId">
+            <input
+              class="szenario-name-input"
+              [value]="sz.name"
+              (focus)="szenarioSelect.emit(sz.id)"
+              (change)="szenarioRename.emit({ id: sz.id, name: $any($event.target).value })"
+              (keydown.enter)="$any($event.target).blur()">
+            <div class="szenario-actions">
+              <button class="icon-btn sm" title="Duplizieren"
                 (mousedown)="$event.preventDefault()"
-                (click)="szenarioDelete.emit(sz.id)">
-                <i class="bi bi-trash"></i>
+                (click)="szenarioDuplicate.emit(sz.id)">
+                <i class="bi bi-copy"></i>
               </button>
-            }
+              @if (state.szenarien.length > 1) {
+                <button class="icon-btn sm danger" title="Löschen"
+                  (mousedown)="$event.preventDefault()"
+                  (click)="szenarioDelete.emit(sz.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              }
+            </div>
           </div>
-        </div>
-      }
+        }
+      </div>
     </div>
 
     <!-- Segmente -->
@@ -80,7 +82,7 @@ import { LOCALE } from '../core/constants';
                 <span class="seg-stat font-monospace text-primary">{{ stats.urlaubstage | number:'1.0-1' }} Tage</span>
               }
             </div>
-            <div class="seg-extras">
+            <div class="seg-extras d-print-none">
               <input type="color" class="seg-color-input"
                 [value]="seg.farbe"
                 (change)="segmentUpdate.emit({ id: seg.id, patch: { farbe: $any($event.target).value } })"

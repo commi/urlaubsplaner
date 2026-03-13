@@ -10,10 +10,17 @@ import { PanelComponent } from './panel/panel.component';
   standalone: true,
   imports: [NavbarComponent, SidebarComponent, CalendarComponent, PanelComponent],
   template: `
-    <up-navbar
+    <up-navbar class="d-print-none"
       [state]="store.state"
       (arbeitsvertragChange)="store.updateArbeitsvertrag($event)">
     </up-navbar>
+
+    <up-calendar
+      [state]="store.state"
+      (segmentPending)="onSegmentPending($event)"
+      (segmentFocus)="onSegmentFocus($event)"
+      (segmentMove)="store.updateSegment($event.id, { start: $event.start, end: $event.end })">
+    </up-calendar>
 
     <up-sidebar
       [state]="store.state"
@@ -26,13 +33,6 @@ import { PanelComponent } from './panel/panel.component';
       (segmentUpdate)="store.updateSegment($event.id, $event.patch)"
       (segmentDelete)="store.deleteSegment($event)">
     </up-sidebar>
-
-    <up-calendar
-      [state]="store.state"
-      (segmentPending)="onSegmentPending($event)"
-      (segmentFocus)="onSegmentFocus($event)"
-      (segmentMove)="store.updateSegment($event.id, { start: $event.start, end: $event.end })">
-    </up-calendar>
 
     <up-panel
       [state]="store.state"

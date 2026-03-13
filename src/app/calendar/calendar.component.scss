@@ -4,9 +4,12 @@
   flex-direction: column;
   overflow-y: auto;
   background: var(--up-bg);
+  @media print {
+    background: none;
+  }
   padding: 1rem 1.25rem;
   gap: 1rem;
-  position: relative;   // Anker für absolut positionierten Hint
+  position: relative; // Anker für absolut positionierten Hint
 }
 
 .selection-hint {
@@ -36,4 +39,8 @@
   grid-template-columns: repeat(auto-fill, 13.9rem);
   gap: 1.5rem 1rem;
   flex: 1;
+
+  @media print {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

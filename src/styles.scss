@@ -125,3 +125,12 @@
     font-size: 0.72rem;
   }
 }
+
+//  Druck
+@media print {
+  // Segment- und Kalenderfarben nicht wegoptimieren
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

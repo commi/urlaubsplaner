@@ -15,7 +15,7 @@ import { LOCALE } from '../core/constants';
   imports: [MonthGridComponent],
   template: `
     @if (auswahlStart) {
-      <div class="selection-hint">
+      <div class="selection-hint d-print-none">
         <i class="bi bi-cursor"></i>
         ab {{ formatDatum(auswahlStart) }} - Endtag wählen
         <button class="icon-btn sm ms-1" (click)="auswahlAbbrechen()">
