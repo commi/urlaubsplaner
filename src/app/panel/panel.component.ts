@@ -64,60 +64,55 @@ import { LOCALE, MONAT_LABELS } from '../core/constants';
     <div class="d-flex flex-column gap-1">
       @for (r of state.firmenregeln; track r.id) {
         <div class="regel-item" [class.uncovered]="nichtAbgedeckt.has(r.id)">
-          <input
-            class="regel-bez-input"
-            [value]="r.bezeichnung"
-            (change)="firmenregelUpdate.emit({ id: r.id, patch: { bezeichnung: $any($event.target).value } })"
-            (keydown.enter)="$any($event.target).blur()">
-          <div class="regel-info">
-            <span class="font-monospace text-secondary" style="font-size:.7rem">
-              {{ formatRegelDatum(r) }}
-            </span>
-            <span class="regel-badge">{{ r.freierAnteil === 0.5 ? '½ Tag' : 'Ganztag' }}</span>
-            @if (r.pflichturlaub) {
-              <span class="regel-badge pflicht text-warning">Pflicht</span>
-            }
+
+          <!-- Zeile 1: Bezeichnung + Warnung + Löschen -->
+          <div class="d-flex align-items-center gap-1">
+            <input
+              class="regel-bez-input flex-fill"
+              [value]="r.bezeichnung"
+              (change)="firmenregelUpdate.emit({ id: r.id, patch: { bezeichnung: $any($event.target).value } })"
+              (keydown.enter)="$any($event.target).blur()">
             @if (nichtAbgedeckt.has(r.id)) {
-              <span class="text-warning ms-auto" title="Pflichturlaub nicht durch Segment abgedeckt">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-              </span>
+              <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0" style="font-size:.75rem"
+                title="Pflichturlaub nicht durch Segment abgedeckt"></i>
             }
+            <button class="icon-btn sm danger flex-shrink-0" (click)="firmenregelDelete.emit(r.id)">
+              <i class="bi bi-trash"></i>
+            </button>
           </div>
-          <div class="regel-extras">
-            <div class="d-flex gap-1 align-items-center flex-wrap">
-              <select class="form-select form-select-sm" style="width:90px"
-                [ngModel]="r.monat"
-                (ngModelChange)="firmenregelUpdate.emit({ id: r.id, patch: { monat: +$event } })">
-                @for (m of monatOptionen; track m.value) {
-                  <option [value]="m.value">{{ m.label }}</option>
-                }
-              </select>
-              <input type="number" class="form-control form-control-sm" style="width:58px"
-                min="1" max="31"
-                [value]="r.tag"
-                (change)="firmenregelUpdate.emit({ id: r.id, patch: { tag: +$any($event.target).value } })">
-              <select class="form-select form-select-sm" style="width:95px"
-                [ngModel]="r.freierAnteil"
-                (ngModelChange)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: +$event } })">
-                <option [value]="0.5">½ Tag</option>
-                <option [value]="1.0">Ganztag</option>
-              </select>
+
+          <!-- Zeile 2: Datum + Anteil + Pflicht-Switch -->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <select class="form-select form-select-sm" style="width:108px"
+              [ngModel]="r.monat"
+              (ngModelChange)="firmenregelUpdate.emit({ id: r.id, patch: { monat: +$event } })">
+              @for (m of monatOptionen; track m.value) {
+                <option [value]="m.value">{{ m.label }}</option>
+              }
+            </select>
+
+            <input type="number" class="form-control form-control-sm" style="width:56px"
+              min="1" max="31" [value]="r.tag"
+              (change)="firmenregelUpdate.emit({ id: r.id, patch: { tag: +$any($event.target).value } })">
+
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary"
+                [class.active]="r.freierAnteil === 0.5"
+                (click)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 0.5 } })">½ Tag</button>
+              <button class="btn btn-outline-secondary"
+                [class.active]="r.freierAnteil === 1.0"
+                (click)="firmenregelUpdate.emit({ id: r.id, patch: { freierAnteil: 1.0 } })">Ganztag</button>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-1">
-              <label class="d-flex align-items-center gap-1 small text-secondary" style="cursor:pointer">
-                <input type="checkbox"
-                  [checked]="r.pflichturlaub"
-                  (mousedown)="$event.preventDefault()"
-                  (change)="firmenregelUpdate.emit({ id: r.id, patch: { pflichturlaub: $any($event.target).checked } })">
-                Pflichturlaub
-              </label>
-              <button class="icon-btn sm danger ms-auto"
-                (mousedown)="$event.preventDefault()"
-                (click)="firmenregelDelete.emit(r.id)">
-                <i class="bi bi-trash"></i>
-              </button>
+
+            <div class="form-check form-switch mb-0" title="Pflichturlaub — Urlaubstage werden abgezogen">
+              <input class="form-check-input" type="checkbox" role="switch"
+                [id]="'pflicht-' + r.id"
+                [checked]="r.pflichturlaub"
+                (change)="firmenregelUpdate.emit({ id: r.id, patch: { pflichturlaub: $any($event.target).checked } })">
+              <label class="form-check-label small text-secondary" [for]="'pflicht-' + r.id">Pflicht</label>
             </div>
           </div>
+
         </div>
       } @empty {
         <div class="small text-secondary" style="padding: .25rem .35rem">Keine Sondertage definiert</div>
@@ -178,7 +173,11 @@ export class PanelComponent implements OnChanges {
   nichtAbgedeckt = new Set<string>();
   confirmingClear = false;
 
-  readonly monatOptionen = MONAT_LABELS.map((label, i) => ({ value: i + 1, label }));
+  readonly monatOptionen = MONAT_LABELS.map((label, i) => ({
+    value: i + 1,
+    label,
+    kurzLabel: new Intl.DateTimeFormat('de-DE', { month: 'short' }).format(new Date(2024, i, 1)).replace('.', ''),
+  }));
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['state'] && this.state) {

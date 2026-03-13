@@ -55,23 +55,18 @@
 .regel-item {
   display: flex;
   flex-direction: column;
-  padding: 0.25rem 0.35rem;
+  gap: 4px;
+  padding: 0.3rem 0.35rem;
   border-radius: 6px;
   transition: background 0.1s;
 
+  &:hover,
   &:focus-within { background: var(--up-surface-2); }
 
-  .regel-extras {
-    display: none;
-    margin-top: 6px;
-  }
-
-  &:focus-within .regel-extras { display: block; }
+  &.uncovered .regel-bez-input:not(:focus) { color: var(--up-amber); }
 }
 
-// Input looks like text when unfocused
 .regel-bez-input {
-  width: 100%;
   background: transparent;
   border: 1px solid transparent;
   color: var(--up-text);
@@ -82,45 +77,17 @@
   border-radius: 4px;
   outline: none;
   transition: background 0.12s, border-color 0.12s;
+  min-width: 0;
 
-  &:hover {
-    background: var(--up-surface-3);
-    border-color: var(--up-border);
-  }
-
-  &:focus {
-    background: var(--up-surface-2);
-    border-color: var(--up-accent);
-  }
+  &:hover { background: var(--up-surface-3); border-color: var(--up-border); }
+  &:focus { background: var(--up-surface-2); border-color: var(--up-accent); }
 }
 
-.regel-info {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 1px 4px;
-
-  .regel-item:focus-within & { display: none; }
-}
-
-
-.regel-item.uncovered {
-  .regel-bez-input:not(:focus) {
-    color: var(--up-amber);
-  }
-}
-
-.regel-badge {
-  font-size: 0.65rem;
-  padding: 1px 5px;
-  border-radius: 10px;
-  background: var(--up-surface-3);
-  color: var(--up-text-muted);
-  font-family: var(--font-mono);
-
-  &.pflicht {
-    background: color-mix(in oklch, var(--bs-warning) 15%, transparent);
-  }
+// form-controls in Sondertag-Zeile 2 etwas kompakter
+.regel-item .form-select,
+.regel-item .form-control {
+  font-size: 0.78rem;
+  padding-block: 3px;
 }
 
 // Feiertage

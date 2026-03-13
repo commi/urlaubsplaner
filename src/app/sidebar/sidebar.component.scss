@@ -93,17 +93,20 @@
   border-radius: 6px;
   transition: background 0.1s;
 
+  &:hover,
   &:focus-within { background: var(--up-surface-2); }
 
-  // Extras (Farbwähler + Löschen) nur wenn fokussiert
   .seg-extras {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 4px;
+    opacity: 0.3;
+    transition: opacity 0.15s;
   }
 
-  &:focus-within .seg-extras { display: flex; }
+  &:hover .seg-extras,
+  &:focus-within .seg-extras { opacity: 1; }
 }
 
 .seg-stripe {
@@ -167,27 +170,23 @@
   font-size: 0.7rem;
 }
 
-//  Farbwähler
+// Nativer Color-Picker
 
-.farb-picker {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-}
-
-.farb-btn {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
+.seg-color-input {
+  width: 22px;
+  height: 22px;
   padding: 0;
-  transition: transform 0.1s, border-color 0.1s;
+  border: 2px solid var(--up-border);
+  border-radius: 50%;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+  transition: border-color 0.15s, transform 0.15s;
 
-  &.active,
-  &:hover {
-    border-color: white;
-    transform: scale(1.2);
-  }
+  &:hover { border-color: white; transform: scale(1.1); }
+
+  &::-webkit-color-swatch-wrapper { padding: 0; }
+  &::-webkit-color-swatch { border: none; border-radius: 50%; }
+  &::-moz-color-swatch { border: none; border-radius: 50%; }
 }
 

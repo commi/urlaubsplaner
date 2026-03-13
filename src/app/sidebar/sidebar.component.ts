@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, Eleme
 import { DecimalPipe } from '@angular/common';
 import { AppState, Segment, Segmentstats, Szenario } from '../core/types';
 import { calcSegment } from '../core/domain';
-import { LOCALE, SEG_FARBEN } from '../core/constants';
+import { LOCALE } from '../core/constants';
 
 @Component({
   selector: 'up-sidebar',
@@ -54,7 +54,7 @@ import { LOCALE, SEG_FARBEN } from '../core/constants';
     <div class="segment-list d-flex flex-column flex-fill overflow-y-auto">
       @if (!aktiveSzenario || aktiveSzenario.segmente.length === 0) {
         <div class="empty-hint text-body-secondary">
-          <i class="bi bi-hand-index fs-4 d-block mb-1"></i>
+          <i class="bi bi-arrow-right-circle fs-4 d-block mb-1"></i>
           Zwei Tage im Kalender anklicken
         </div>
       }
@@ -81,16 +81,10 @@ import { LOCALE, SEG_FARBEN } from '../core/constants';
               }
             </div>
             <div class="seg-extras">
-              <div class="farb-picker">
-                @for (farbe of farben; track farbe) {
-                  <button class="farb-btn"
-                    [style.background]="farbe"
-                    [class.active]="seg.farbe === farbe"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="segmentUpdate.emit({ id: seg.id, patch: { farbe } })">
-                  </button>
-                }
-              </div>
+              <input type="color" class="seg-color-input"
+                [value]="seg.farbe"
+                (change)="segmentUpdate.emit({ id: seg.id, patch: { farbe: $any($event.target).value } })"
+                title="Farbe ändern">
               <button class="icon-btn sm danger ms-auto"
                 (mousedown)="$event.preventDefault()"
                 (click)="segmentDelete.emit(seg.id)">
@@ -116,7 +110,6 @@ export class SidebarComponent implements OnChanges {
   @Output() segmentUpdate     = new EventEmitter<{ id: string; patch: Partial<Segment> }>();
   @Output() segmentDelete     = new EventEmitter<string>();
 
-  readonly farben = SEG_FARBEN;
   private readonly hostEl = inject(ElementRef);
   private segStatsCache = new Map<string, Segmentstats>();
 
