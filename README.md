@@ -1,6 +1,17 @@
-# Urlaubsplaner
+# Urlaubstageplaner
 
-Kleines Tool zur Planung und Visualisierung von Urlaubstagen.
+Kleines Tool zur Planung, Visualisierung und Optimierung von Urlaubstagen direkt im Browser.
+
+![Screenshot](docs/screenshot.png)
+
+## Features
+
+- Jahreskalender mit Urlaubssegmenten
+- Mehrere Szenarien anlegen und vergleichen
+- Berücksichtigung Feiertage je Bundesland
+- Berücksichtigung Sondertage konfigurieren (z.B. Heiligabend, Silvester als halber oder freier Tag oder Tag an dem zwingenden Urlaub zu nehmen ist)
+- Anzeige verbrauchte und verbleibende Urlaubstage
+- Export und Import als JSON
 
 ## Entwicklung
 

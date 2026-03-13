@@ -10,7 +10,7 @@ import { REGIONEN } from '../core/constants';
   template: `
     <div class="brand d-flex align-items-center gap-2">
       <i class="bi bi-sun-fill text-warning"></i>
-      <span>Urlaubsplaner</span>
+      <span>Urlaubstageplaner</span>
     </div>
 
     <div class="d-flex align-items-center gap-3 ms-auto">
