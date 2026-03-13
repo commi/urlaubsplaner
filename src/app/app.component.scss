@@ -11,11 +11,15 @@
 
 @media (max-width: 1023px) {
   :host {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: unset;
+    grid-template-columns: auto 1fr;
     grid-template-areas:
-      "nav"
-      "cal";
+      "nav nav"
+      "cal cal"
+      "side panel"
+  ;
+    height: auto;
+    overflow: auto;
   }
 }
 
