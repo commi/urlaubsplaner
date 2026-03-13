@@ -82,6 +82,11 @@
     &.wochenende:not(.urlaub) {
       background: color-mix(in oklch, var(--up-amber) 5%, transparent);
       color: color-mix(in oklch, var(--up-amber) 35%, var(--up-text-muted));
+
+      .feiertag-dot {
+        opacity: 0.5;
+        background: var(--up-text-muted);
+      }
     }
   }
 
