@@ -1,0 +1,32 @@
+// ─ Design Tokens ─────────────────────────────────────────────────────────────
+// Single source of truth for all theme colors.
+// Imported by styles.scss via @use before Bootstrap so these values can be
+// passed into Bootstrap's `with ()` configuration clause.
+
+// Light palette
+$lt-bg: hsl(210, 40%, 98%);
+$lt-surface-1: hsl(0, 0%, 100%);
+$lt-surface-2: hsl(210, 40%, 96%);
+$lt-surface-3: hsl(214, 32%, 91%);
+$lt-border: hsl(213, 27%, 84%);
+$lt-text: hsl(222, 47%, 11%);
+$lt-muted:     hsl(215, 16%, 47%);
+$lt-secondary: hsl(215, 14%, 34%);
+$lt-accent:    hsl(221, 83%, 53%);
+$lt-green: hsl(142, 76%, 36%);
+$lt-amber: hsl(32, 95%, 44%);
+$lt-coral: hsl(0, 72%, 51%);
+
+// Dark palette — Solarized Dark / meergrünblass
+$dk-bg: hsl(201, 100%, 7%);
+$dk-surface-1: hsl(201, 100%, 11%);
+$dk-surface-2: hsl(201, 81%, 14%); // Solarized base02
+$dk-surface-3: hsl(201, 72%, 20%);
+$dk-border: hsl(201, 75%, 25%);
+$dk-text: hsl(180, 7%, 80%); // Solarized base1
+$dk-muted:     hsl(194, 14%, 60%);   // Solarized base01
+$dk-secondary: hsl(201, 40%, 42%);   // mid-teal for buttons/badges
+$dk-accent:    hsl(201, 65%, 47%);
+$dk-green: hsl(175, 59%, 40%); // Solarized cyan
+$dk-amber: hsl(45, 100%, 35%); // Solarized yellow
+$dk-coral: hsl(1, 71%, 52%); // Solarized red

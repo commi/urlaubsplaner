@@ -259,11 +259,11 @@ export function buildMonthDays(
   const heute = isoDate(new Date());
   const anzahlTage = new Date(jahr, monat + 1, 0).getDate();
 
-  const segmentMap = new Map<string, { id: string; farbe: string; name: string; pos: 'anfang' | 'ende' | 'mitte' | 'solo' }>();
+  const segmentMap = new Map<string, { id: string; farbe: string; name: string; start: string; end: string; pos: 'anfang' | 'ende' | 'mitte' | 'solo' }>();
   for (const seg of szenario.segmente) {
     const alleTage = daysInRange(seg.start, seg.end);
     alleTage.forEach((iso, idx) => {
-      segmentMap.set(iso, { id: seg.id, farbe: seg.farbe, name: seg.name, pos: calcSegmentPos(iso, alleTage, idx) });
+      segmentMap.set(iso, { id: seg.id, farbe: seg.farbe, name: seg.name, start: seg.start, end: seg.end, pos: calcSegmentPos(iso, alleTage, idx) });
     });
   }
 
@@ -282,7 +282,7 @@ export function buildMonthDays(
       feiertagName: feiertage.get(iso) ?? null,
       firmenregel,
       istPflichturlaub: firmenregel?.pflichturlaub ?? false,
-      segment: segData ? { id: segData.id, farbe: segData.farbe, name: segData.name } : null,
+      segment: segData ? { id: segData.id, farbe: segData.farbe, name: segData.name, start: segData.start, end: segData.end } : null,
       segmentPos: segData?.pos ?? null,
       istAuswahl: false,
       auswahlPos: null,

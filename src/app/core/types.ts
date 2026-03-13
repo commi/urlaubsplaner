@@ -45,7 +45,7 @@ export interface TagViewModel {
   feiertagName: string | null;
   firmenregel: Firmenregel | null;
   istPflichturlaub: boolean;
-  segment: { id: string; farbe: string; name: string } | null;
+  segment: { id: string; farbe: string; name: string; start: string; end: string } | null;
   segmentPos: 'anfang' | 'ende' | 'mitte' | 'solo' | null;
   istAuswahl: boolean;
   auswahlPos: 'anfang' | 'ende' | 'mitte' | 'solo' | null;

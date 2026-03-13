@@ -1,18 +1,21 @@
-//  Imports ─
+//  Imports -
+@use 'sass:color';
+@use './tokens' as t;
 @use 'bootstrap/scss/bootstrap' with (
   $font-family-sans-serif: ("Bricolage Grotesque", system-ui, sans-serif),
   $font-family-monospace:  ("DM Mono", ui-monospace, monospace),
-  $primary:                #2563eb,
-  $body-bg:                #f8fafc,
-  $body-color:             #0f172a,
-  $body-secondary-color:   #64748b,
-  $body-emphasis-color:    #0f172a,
-  $body-secondary-bg:      #f1f5f9,
-  $body-tertiary-bg:       #e2e8f0,
-  $border-color:           #cbd5e1,
-  $success:                #16a34a,
-  $warning:                #d97706,
-  $danger:                 #dc2626,
+  $primary:                t.$lt-accent,
+  $secondary:              t.$lt-secondary,
+  $body-bg:                t.$lt-bg,
+  $body-color:             t.$lt-text,
+  $body-secondary-color:   t.$lt-muted,
+  $body-emphasis-color:    t.$lt-text,
+  $body-secondary-bg:      t.$lt-surface-2,
+  $body-tertiary-bg:       t.$lt-surface-3,
+  $border-color:           t.$lt-border,
+  $success:                t.$lt-green,
+  $warning:                t.$lt-amber,
+  $danger:                 t.$lt-coral,
 );
 @use 'bootstrap-icons/font/bootstrap-icons';
 @import '@fontsource/bricolage-grotesque/400.css';
@@ -20,134 +23,78 @@
 @import '@fontsource/bricolage-grotesque/700.css';
 @import '@fontsource/dm-mono/400.css';
 
-//  Design Tokens ─
-// Unlayered – placed after Bootstrap so these CSS custom property definitions
-// win via source order (same specificity, later wins).
+
+@function rgb-channels($c) {
+  @return #{color.red($c)}, #{color.green($c)}, #{color.blue($c)};
+}
+
 
 :root {
   --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-mono:    'DM Mono', ui-monospace, monospace;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  // Light palette
-  --up-bg:         #f8fafc;
-  --up-surface-1:  #ffffff;
-  --up-surface-2:  #f1f5f9;
-  --up-surface-3:  #e2e8f0;
-  --up-border:     #cbd5e1;
-  --up-text:       #0f172a;
-  --up-text-muted: #64748b;
-  --up-accent:     #2563eb;
-  --up-green:      #16a34a;
-  --up-amber:      #d97706;
-  --up-coral:      #dc2626;
+  --up-bg: #{t.$lt-bg};
+  --up-surface-1: #{t.$lt-surface-1};
+  --up-surface-2: #{t.$lt-surface-2};
+  --up-surface-3: #{t.$lt-surface-3};
+  --up-border: #{t.$lt-border};
+  --up-text: #{t.$lt-text};
+  --up-text-muted: #{t.$lt-muted};
+  --up-accent: #{t.$lt-accent};
+  --up-green: #{t.$lt-green};
+  --up-amber: #{t.$lt-amber};
+  --up-coral: #{t.$lt-coral};
 }
 
 [data-bs-theme="dark"] {
-  // Dark palette
-  --up-bg:         #080c14;
-  --up-surface-1:  #0d1320;
-  --up-surface-2:  #121929;
-  --up-surface-3:  #18213a;
-  --up-border:     #1e2d4a;
-  --up-text:       #e2e8f8;
-  --up-text-muted: #6b7fa8;
-  --up-accent:     #3b82f6;
-  --up-green:      #22c55e;
-  --up-amber:      #f59e0b;
-  --up-coral:      #ff6b6b;
+  // Dark palette - Solarized Dark / meergrünblass
+  --up-bg: #{t.$dk-bg};
+  --up-surface-1: #{t.$dk-surface-1};
+  --up-surface-2: #{t.$dk-surface-2};
+  --up-surface-3: #{t.$dk-surface-3};
+  --up-border: #{t.$dk-border};
+  --up-text: #{t.$dk-text};
+  --up-text-muted: #{t.$dk-muted};
+  --up-accent: #{t.$dk-accent};
+  --up-green: #{t.$dk-green};
+  --up-amber: #{t.$dk-amber};
+  --up-coral: #{t.$dk-coral};
 
   // Bootstrap semantic mapping (dark)
-  --bs-body-bg:                  var(--up-bg);
-  --bs-body-color:               var(--up-text);
-  --bs-secondary-color:          var(--up-text-muted);
-  --bs-emphasis-color:           var(--up-text);
-  --bs-border-color:             var(--up-border);
+  --bs-body-bg: var(--up-bg);
+  --bs-body-bg-rgb: #{rgb-channels(t.$dk-bg)};
+  --bs-body-color: var(--up-text);
+  --bs-body-color-rgb: #{rgb-channels(t.$dk-text)};
+  --bs-emphasis-color: var(--up-text);
+  --bs-emphasis-color-rgb: #{rgb-channels(t.$dk-text)};
+  --bs-secondary-color: var(--up-text-muted);
+  --bs-secondary-color-rgb: #{rgb-channels(t.$dk-muted)};
+  --bs-secondary-bg: var(--up-surface-2);
+  --bs-secondary-bg-rgb: #{rgb-channels(t.$dk-surface-2)};
+  --bs-tertiary-bg: var(--up-surface-3);
+  --bs-tertiary-bg-rgb: #{rgb-channels(t.$dk-surface-3)};
+  --bs-border-color: var(--up-border);
   --bs-border-color-translucent: color-mix(in oklch, var(--up-border) 50%, transparent);
-  --bs-primary:                  var(--up-accent);
-  --bs-primary-rgb:              59, 130, 246;
-  --bs-secondary-bg:             var(--up-surface-2);
-  --bs-tertiary-bg:              var(--up-surface-3);
-  --bs-link-color:               var(--up-accent);
-  --bs-link-hover-color:         color-mix(in oklch, var(--up-accent) 80%, white);
-  --bs-form-select-bg-img:       url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7fa8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  --bs-primary: var(--up-accent);
+  --bs-primary-rgb: #{rgb-channels(t.$dk-accent)};
+  --bs-secondary: #{t.$dk-secondary};
+  --bs-secondary-rgb: #{rgb-channels(t.$dk-secondary)};
+  --bs-link-color: var(--up-accent);
+  --bs-link-hover-color: color-mix(in oklch, var(--up-accent) 80%, white);
 
-  // Semantic colors (dark palette differs from light)
-  --bs-success:                  var(--up-green);
-  --bs-success-rgb:              34, 197, 94;
-  --bs-warning:                  var(--up-amber);
-  --bs-warning-rgb:              245, 158, 11;
-  --bs-danger:                   var(--up-coral);
-  --bs-danger-rgb:               255, 107, 107;
-}
 
-//  Bootstrap component overrides ─
-// Unlayered – must beat Bootstrap's own declarations via source order.
-
-.btn-primary {
-  --bs-btn-bg:           var(--up-accent);
-  --bs-btn-border-color: var(--up-accent);
-  --bs-btn-hover-bg:     color-mix(in oklch, var(--up-accent) 85%, white);
-}
-
-.btn-outline-secondary {
-  --bs-btn-color:        var(--up-text-muted);
-  --bs-btn-border-color: var(--up-border);
-  --bs-btn-hover-bg:     var(--up-surface-3);
-  --bs-btn-hover-color:  var(--up-text);
-}
-
-.btn-outline-danger {
-  --bs-btn-hover-bg: color-mix(in oklch, var(--up-coral) 20%, transparent);
-}
-
-.badge.bg-secondary {
-  background: var(--up-surface-3) !important;
-  color: var(--up-text-muted);
-}
-
-.form-control,
-.form-select {
-  background-color: var(--up-surface-2);
-  border-color: var(--up-border);
-  color: var(--up-text);
-
-  &:focus {
-    background-color: var(--up-surface-2);
-    border-color: var(--up-accent);
-    color: var(--up-text);
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--up-accent) 25%, transparent);
-  }
-
-  &::placeholder { color: var(--up-text-muted); }
-}
-
-//  Layout
-// @layer so these structural rules don't interfere with Bootstrap's resets.
-@layer layout {
-  *,
-  *::before,
-  *::after { box-sizing: border-box; }
-
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: var(--up-surface-1); }
-  ::-webkit-scrollbar-thumb {
-    background: var(--up-border);
-    border-radius: 3px;
-    &:hover { background: var(--up-text-muted); }
-  }
+  // Semantic colors
+  --bs-success: var(--up-green);
+  --bs-success-rgb: #{rgb-channels(t.$dk-green)};
+  --bs-warning: var(--up-amber);
+  --bs-warning-rgb: #{rgb-channels(t.$dk-amber)};
+  --bs-danger: var(--up-coral);
+  --bs-danger-rgb: #{rgb-channels(t.$dk-coral)};
 }
 
 
-//  Buttons ─
 
+//  Buttons
 .icon-btn {
   display: inline-flex;
   align-items: center;

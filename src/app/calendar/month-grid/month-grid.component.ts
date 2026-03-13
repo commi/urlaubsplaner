@@ -21,7 +21,7 @@ import { WOCHENTAG_LABELS, MONAT_LABELS } from '../../core/constants';
           [ngClass]="dayClasses(day)"
           [style.--seg-color]="day.segment?.farbe ?? 'transparent'"
           [attr.data-iso]="day.iso"
-          [attr.title]="day.feiertagName ?? day.firmenregel?.bezeichnung ?? day.segment?.name ?? null"
+          [attr.title]="buildTooltip(day)"
           (click)="dayClick.emit(day.iso)"
           (pointerdown)="day.segment ? segmentPointerDown.emit({ event: $event, id: day.segment.id }) : null">
           <span class="tag-zahl">{{ day.tag }}</span>
@@ -53,6 +53,37 @@ export class MonthGridComponent {
     const ersterTag = new Date(this.days[0].iso + 'T00:00:00');
     // Montag = 0, Sonntag = 6
     return (ersterTag.getDay() + 6) % 7;
+  }
+
+  buildTooltip(day: TagViewModel): string | null {
+    const zeilen: string[] = [];
+    const fmt = (iso: string) => new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit' }).format(new Date(iso + 'T00:00:00'));
+    const tageZwischen = (a: string, b: string) => Math.round((new Date(b + 'T00:00:00').getTime() - new Date(a + 'T00:00:00').getTime()) / 86_400_000) + 1;
+
+    if (day.istHeute) zeilen.push('Heute');
+
+    if (day.feiertagName) {
+      const hinweis = day.istWochenende ? ' (fällt auf Wochenende, zählt nicht)' : '';
+      zeilen.push(`Feiertag: ${day.feiertagName}${hinweis}`);
+    }
+
+    if (day.firmenregel && !day.istWochenende && !day.feiertagName) {
+      const details: string[] = [];
+      if (day.firmenregel.freierAnteil < 1) details.push('halber Urlaubstag');
+      if (day.firmenregel.pflichturlaub)    details.push('Pflichturlaub');
+      const suffix = details.length ? ` (${details.join(', ')})` : '';
+      zeilen.push(`Sondertag: ${day.firmenregel.bezeichnung}${suffix}`);
+    }
+
+    if (day.segment) {
+      const anzahlTage = tageZwischen(day.segment.start, day.segment.end);
+      zeilen.push(`Urlaub: ${day.segment.name}`);
+      zeilen.push(`${fmt(day.segment.start)} – ${fmt(day.segment.end)} (${anzahlTage} Kalendertage)`);
+    }
+
+    if (day.istWochenende && !day.feiertagName && !day.segment) return null;
+
+    return zeilen.length ? zeilen.join('\n') : null;
   }
 
   dayClasses(day: TagViewModel): Record<string, boolean> {
