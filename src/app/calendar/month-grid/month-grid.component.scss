@@ -105,6 +105,12 @@
   &.urlaub {
     background: var(--seg-color);
     color: white;
+
+    // Select text color for user segment color.. bias to white, as contrast-color() too much want to use black text
+    @supports (color: contrast-color(color-mix(var(--seg-color) 72%, black 28%))) {
+      color: contrast-color(color-mix(var(--seg-color) 72%, black 28%));
+    }
+
     border-radius: 0;
 
     &.urlaub-anfang { border-radius: 5px 0 0 5px; }
