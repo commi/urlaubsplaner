@@ -101,30 +101,25 @@
 }
 
 .feiertage-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.feiertag-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 4px 2px;
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.77rem;
   color: var(--up-text);
-  border-bottom: 1px solid color-mix(in oklch, var(--up-border) 50%, transparent);
 
-  &:last-child { border-bottom: none; }
-}
+  td {
+    padding: 4px 2px;
+    border-bottom: 1px solid color-mix(in oklch, var(--up-border) 50%, transparent);
+  }
 
-.feiertag-datum {
-  font-size: 0.7rem;
-  min-width: 38px;
-  flex-shrink: 0;
-}
+  tr:last-child td { border-bottom: none; }
 
-.feiertag-name {
-  min-width: 0;
+  td:first-child {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    padding-right: 0.5rem;
+  }
+
+  td:last-child { width: 100%; }
 }
 
 // Aktionen

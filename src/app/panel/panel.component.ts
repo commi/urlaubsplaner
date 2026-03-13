@@ -139,16 +139,18 @@ import { LOCALE, MONAT_LABELS } from '../core/constants';
     <!-- Feiertage  -->
     <div class="feiertage-section">
       <div class="panel-subtitle">Feiertage {{ state?.jahr }}</div>
-      <div class="feiertage-list">
-        @for (ft of feiertageListe; track ft.iso) {
-          <div class="feiertag-item">
-            <span class="feiertag-datum font-monospace text-warning">{{ formatDatumKurz(ft.iso) }}</span>
-            <span class="feiertag-name text-truncate">{{ ft.name }}</span>
-          </div>
-        } @empty {
-          <div class="small text-secondary p-2">Keine Feiertage gefunden</div>
-        }
-      </div>
+      <table class="feiertage-list">
+        <tbody>
+          @for (ft of feiertageListe; track ft.iso) {
+            <tr>
+              <td class="font-monospace text-warning">{{ formatDatumKurz(ft.iso) }}</td>
+              <td class="text-truncate">{{ ft.name }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="2" class="small text-secondary p-2">Keine Feiertage gefunden</td></tr>
+          }
+        </tbody>
+      </table>
     </div>
 
     <!-- Aktionen -->
