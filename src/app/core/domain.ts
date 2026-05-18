@@ -1,55 +1,39 @@
-import { Firmenregel, Gesamtstatistik, Segment, Segmentstats, Szenario, TagViewModel } from './types';
+import { Firmenregel, Gesamtstatistik, IsoDate, Segment, Segmentstats, Szenario, TagViewModel } from './types';
 import { SEG_FARBEN } from './constants';
 
 
 // Datum-Hilfsfunktionen
 
 
-export function isoDate(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const t = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${t}`;
+/** Convert a PlainDate to an IsoDate string. */
+export function isoString(date: Temporal.PlainDate): IsoDate {
+  return date.toString() as IsoDate;
 }
 
-export function parseIso(iso: string): Date {
-  const [y, m, t] = iso.split('-').map(Number);
-  return new Date(y, m - 1, t);
+export function addDays(date: IsoDate, delta: number): IsoDate {
+  return isoString(Temporal.PlainDate.from(date).add({ days: delta }));
 }
 
-export function istWochenende(d: Date): boolean {
-  const dow = d.getDay();
-  return dow === 0 || dow === 6;
-}
-
-export function daysInRange(start: string, end: string): string[] {
-  const ergebnis: string[] = [];
-  const cur = parseIso(start);
-  const endDatum = parseIso(end);
-  while (cur <= endDatum) {
-    ergebnis.push(isoDate(cur));
-    cur.setDate(cur.getDate() + 1);
+export function daysInRange(start: IsoDate, end: IsoDate): IsoDate[] {
+  const ergebnis: IsoDate[] = [];
+  let cur = Temporal.PlainDate.from(start);
+  const endDatum = Temporal.PlainDate.from(end);
+  while (Temporal.PlainDate.compare(cur, endDatum) <= 0) {
+    ergebnis.push(isoString(cur));
+    cur = cur.add({ days: 1 });
   }
   return ergebnis;
 }
 
-export function daysDiff(vonIso: string, bisIso: string): number {
-  const von = parseIso(vonIso);
-  const bis = parseIso(bisIso);
-  return Math.round((bis.getTime() - von.getTime()) / 86_400_000);
-}
-
-function addTage(d: Date, tage: number): Date {
-  const r = new Date(d);
-  r.setDate(r.getDate() + tage);
-  return r;
+export function daysDiff(vonIso: IsoDate, bisIso: IsoDate): number {
+  return Temporal.PlainDate.from(vonIso).until(bisIso).days;
 }
 
 
 // Ostern (Gaußsche Formel)
 
 
-export function calcEaster(jahr: number): Date {
+export function calcEaster(jahr: number): Temporal.PlainDate {
   const a = jahr % 19;
   const b = Math.floor(jahr / 100);
   const c = jahr % 100;
@@ -64,42 +48,40 @@ export function calcEaster(jahr: number): Date {
   const m = Math.floor((a + 11 * h + 22 * l) / 451);
   const monat = Math.floor((h + l - 7 * m + 114) / 31);
   const tag   = ((h + l - 7 * m + 114) % 31) + 1;
-  return new Date(jahr, monat - 1, tag);
+  return new Temporal.PlainDate(jahr, monat, tag);
 }
 
 
 // Buß- und Bettag (Mittwoch vor dem 23. November)
 
 
-function calcBussUndBettag(jahr: number): Date {
-  const nov23 = new Date(jahr, 10, 23);
-  const dow = nov23.getDay(); // 0=So … 6=Sa, 3=Mi
+function calcBussUndBettag(jahr: number): Temporal.PlainDate {
+  const nov23 = new Temporal.PlainDate(jahr, 11, 23);
+  const dow = nov23.dayOfWeek; // 1=Mo … 7=So, 3=Mi
   const daysBack = dow >= 3 ? (dow - 3 || 7) : dow + 4;
-  const result = new Date(nov23);
-  result.setDate(23 - daysBack);
-  return result;
+  return nov23.subtract({ days: daysBack });
 }
 
 
 // Feiertage - alle 16 Bundesländer
 
 
-export function getHolidays(jahr: number, region: string): Map<string, string> {
-  const feiertage = new Map<string, string>();
-  const add = (d: Date, name: string) => feiertage.set(isoDate(d), name);
-  const D = (m: number, t: number) => new Date(jahr, m - 1, t);
+export function getHolidays(jahr: number, region: string): Map<IsoDate, string> {
+  const feiertage = new Map<IsoDate, string>();
+  const add = (date: Temporal.PlainDate, name: string) => feiertage.set(isoString(date), name);
+  const D = (m: number, t: number) => new Temporal.PlainDate(jahr, m, t);
 
   const ostern      = calcEaster(jahr);
-  const karfreitag  = addTage(ostern, -2);
-  const himmelfahrt = addTage(ostern, 39);
-  const pfingstmontag = addTage(ostern, 50);
-  const fronleichnam  = addTage(ostern, 60);
+  const karfreitag  = ostern.subtract({ days: 2 });
+  const himmelfahrt = ostern.add({ days: 39 });
+  const pfingstmontag = ostern.add({ days: 50 });
+  const fronleichnam  = ostern.add({ days: 60 });
 
-  // Bundesweit 
+  // Bundesweit
   add(D(1,  1),  'Neujahr');
   add(karfreitag,    'Karfreitag');
-  add(addTage(ostern, 0), 'Ostersonntag');
-  add(addTage(ostern, 1), 'Ostermontag');
+  add(ostern,        'Ostersonntag');
+  add(ostern.add({ days: 1 }), 'Ostermontag');
   add(D(5,  1),  'Tag der Arbeit');
   add(himmelfahrt,   'Christi Himmelfahrt');
   add(pfingstmontag, 'Pfingstmontag');
@@ -107,52 +89,52 @@ export function getHolidays(jahr: number, region: string): Map<string, string> {
   add(D(12, 25), '1. Weihnachtstag');
   add(D(12, 26), '2. Weihnachtstag');
 
-  // Heilige Drei Könige (6.1): BY, BW, ST 
+  // Heilige Drei Könige (6.1): BY, BW, ST
   if (['DE-BY', 'DE-BW', 'DE-ST'].includes(region)) {
     add(D(1, 6), 'Heilige Drei Könige');
   }
 
-  // Internationaler Frauentag (8.3): BE, MV 
+  // Internationaler Frauentag (8.3): BE, MV
   if (['DE-BE', 'DE-MV'].includes(region)) {
     add(D(3, 8), 'Internationaler Frauentag');
   }
 
-  // Ostersonntag: BB 
+  // Ostersonntag: BB
   if (region === 'DE-BB') {
     add(ostern, 'Ostersonntag');
   }
 
-  // Pfingstsonntag: BB 
+  // Pfingstsonntag: BB
   if (region === 'DE-BB') {
-    add(addTage(ostern, 49), 'Pfingstsonntag');
+    add(ostern.add({ days: 49 }), 'Pfingstsonntag');
   }
 
-  // Fronleichnam: BW, BY, HE, NW, RP, SL 
+  // Fronleichnam: BW, BY, HE, NW, RP, SL
   if (['DE-BW', 'DE-BY', 'DE-HE', 'DE-NW', 'DE-RP', 'DE-SL'].includes(region)) {
     add(fronleichnam, 'Fronleichnam');
   }
 
-  // Mariä Himmelfahrt (15.8): BY, SL 
+  // Mariä Himmelfahrt (15.8): BY, SL
   if (['DE-BY', 'DE-SL'].includes(region)) {
     add(D(8, 15), 'Mariä Himmelfahrt');
   }
 
-  // Weltkindertag (20.9): TH 
+  // Weltkindertag (20.9): TH
   if (region === 'DE-TH') {
     add(D(9, 20), 'Weltkindertag');
   }
 
-  // Reformationstag (31.10): BB, HB, HH, MV, NI, SH, SN, ST, TH 
+  // Reformationstag (31.10): BB, HB, HH, MV, NI, SH, SN, ST, TH
   if (['DE-BB', 'DE-HB', 'DE-HH', 'DE-MV', 'DE-NI', 'DE-SH', 'DE-SN', 'DE-ST', 'DE-TH'].includes(region)) {
     add(D(10, 31), 'Reformationstag');
   }
 
-  // Allerheiligen (1.11): BW, BY, NW, RP, SL 
+  // Allerheiligen (1.11): BW, BY, NW, RP, SL
   if (['DE-BW', 'DE-BY', 'DE-NW', 'DE-RP', 'DE-SL'].includes(region)) {
     add(D(11, 1), 'Allerheiligen');
   }
 
-  // Buß- und Bettag: SN 
+  // Buß- und Bettag: SN
   if (region === 'DE-SN') {
     add(calcBussUndBettag(jahr), 'Buß- und Bettag');
   }
@@ -164,10 +146,8 @@ export function getHolidays(jahr: number, region: string): Map<string, string> {
 // Firmenregeln
 
 
-export function getFirmenregel(d: Date, firmenregeln: Firmenregel[]): Firmenregel | null {
-  const monat = d.getMonth() + 1;
-  const tag   = d.getDate();
-  return firmenregeln.find(r => r.monat === monat && r.tag === tag) ?? null;
+export function getFirmenregel(date: Temporal.PlainDate, firmenregeln: Firmenregel[]): Firmenregel | null {
+  return firmenregeln.find(r => r.monat === date.month && r.tag === date.day) ?? null;
 }
 
 
@@ -176,8 +156,8 @@ export function getFirmenregel(d: Date, firmenregeln: Firmenregel[]): Firmenrege
 
 export function calcSegment(segment: Segment, jahr: number, region: string, firmenregeln: Firmenregel[]): Segmentstats {
   // Segment auf das angezeigte Jahr beschränken
-  const jahrStart = `${jahr}-01-01`;
-  const jahrEnd   = `${jahr}-12-31`;
+  const jahrStart = `${jahr}-01-01` as IsoDate;
+  const jahrEnd   = `${jahr}-12-31` as IsoDate;
   const start = segment.start < jahrStart ? jahrStart : segment.start;
   const end   = segment.end   > jahrEnd   ? jahrEnd   : segment.end;
 
@@ -195,10 +175,10 @@ export function calcSegment(segment: Segment, jahr: number, region: string, firm
   let urlaubstage   = 0;
 
   for (const iso of tage) {
-    const d = parseIso(iso);
+    const d = Temporal.PlainDate.from(iso);
     kalendertage++;
 
-    if (istWochenende(d)) { wochenendtage++; continue; }
+    if (d.dayOfWeek >= 6) { wochenendtage++; continue; }
     if (feiertage.has(iso)) { feiertageTage++; continue; }
 
     const regel = getFirmenregel(d, firmenregeln);
@@ -249,11 +229,11 @@ export function calcTotals(
 // TagViewModels
 
 
-function calcSegmentPos(iso: string, alleTage: string[], idx: number): 'anfang' | 'ende' | 'mitte' | 'solo' {
-  const prevIso = (i: string) => { const d = parseIso(i); d.setDate(d.getDate() - 1); return isoDate(d); };
-  const nextIso = (i: string) => { const d = parseIso(i); d.setDate(d.getDate() + 1); return isoDate(d); };
-  const isFirst = idx === 0 || alleTage[idx - 1] !== prevIso(iso);
-  const isLast  = idx === alleTage.length - 1 || alleTage[idx + 1] !== nextIso(iso);
+function calcSegmentPos(d: IsoDate, alleTage: IsoDate[], idx: number): 'anfang' | 'ende' | 'mitte' | 'solo' {
+  const prev = addDays(d, -1);
+  const next = addDays(d, 1);
+  const isFirst = idx === 0 || alleTage[idx - 1] !== prev;
+  const isLast  = idx === alleTage.length - 1 || alleTage[idx + 1] !== next;
   if (isFirst && isLast) return 'solo';
   if (isFirst) return 'anfang';
   if (isLast)  return 'ende';
@@ -264,31 +244,32 @@ export function buildMonthDays(
   jahr: number,
   monat: number,       // 0-based
   szenario: Szenario,
-  feiertage: Map<string, string>,
+  feiertage: Map<IsoDate, string>,
   firmenregeln: Firmenregel[],
 ): TagViewModel[] {
-  const heute = isoDate(new Date());
-  const anzahlTage = new Date(jahr, monat + 1, 0).getDate();
+  const heute = isoString(Temporal.Now.plainDateISO());
+  const anzahlTage = Temporal.PlainDate.from({ year: jahr, month: monat + 1, day: 1 })
+    .toPlainYearMonth().daysInMonth;
 
-  const segmentMap = new Map<string, { id: string; farbe: string; name: string; start: string; end: string; pos: 'anfang' | 'ende' | 'mitte' | 'solo' }>();
+  const segmentMap = new Map<IsoDate, { id: string; farbe: string; name: string; start: IsoDate; end: IsoDate; pos: 'anfang' | 'ende' | 'mitte' | 'solo' }>();
   for (const seg of szenario.segmente) {
     const alleTage = daysInRange(seg.start, seg.end);
-    alleTage.forEach((iso, idx) => {
-      segmentMap.set(iso, { id: seg.id, farbe: seg.farbe, name: seg.name, start: seg.start, end: seg.end, pos: calcSegmentPos(iso, alleTage, idx) });
+    alleTage.forEach((d, idx) => {
+      segmentMap.set(d, { id: seg.id, farbe: seg.farbe, name: seg.name, start: seg.start, end: seg.end, pos: calcSegmentPos(d, alleTage, idx) });
     });
   }
 
   const ergebnis: TagViewModel[] = [];
   for (let t = 1; t <= anzahlTage; t++) {
-    const d   = new Date(jahr, monat, t);
-    const iso = isoDate(d);
+    const d   = new Temporal.PlainDate(jahr, monat + 1, t);
+    const iso = isoString(d);
     const segData     = segmentMap.get(iso) ?? null;
     const firmenregel = getFirmenregel(d, firmenregeln);
 
     ergebnis.push({
       iso,
       tag: t,
-      istWochenende: istWochenende(d),
+      istWochenende: d.dayOfWeek >= 6,
       istHeute: iso === heute,
       feiertagName: feiertage.get(iso) ?? null,
       firmenregel,
@@ -309,14 +290,14 @@ export function buildMonthDays(
 
 
 export function shiftSegment(seg: Segment, deltaTage: number): Segment {
-  const neuerStart = parseIso(seg.start);
-  neuerStart.setDate(neuerStart.getDate() + deltaTage);
-  const neuesEnd = parseIso(seg.end);
-  neuesEnd.setDate(neuesEnd.getDate() + deltaTage);
-  return { ...seg, start: isoDate(neuerStart), end: isoDate(neuesEnd) };
+  return {
+    ...seg,
+    start: addDays(seg.start, deltaTage),
+    end: addDays(seg.end, deltaTage),
+  };
 }
 
-export function hasOverlap(segmente: Segment[], start: string, end: string, ignoreId?: string): boolean {
+export function hasOverlap(segmente: Segment[], start: IsoDate, end: IsoDate, ignoreId?: string): boolean {
   for (const seg of segmente) {
     if (seg.id === ignoreId) continue;
     if (seg.start <= end && seg.end >= start) return true;
@@ -332,9 +313,9 @@ export function uncoveredPflichtTage(
   const result = new Set<string>();
   for (const r of firmenregeln) {
     if (!r.pflichturlaub) continue;
-    const d = new Date(jahr, r.monat - 1, r.tag);
-    if (istWochenende(d)) continue;
-    const iso = isoDate(d);
+    const d = new Temporal.PlainDate(jahr, r.monat, r.tag);
+    if (d.dayOfWeek >= 6) continue;
+    const iso = isoString(d);
     const covered = szenario.segmente.some(s => s.start <= iso && s.end >= iso);
     if (!covered) result.add(r.id);
   }

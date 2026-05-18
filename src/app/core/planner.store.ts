@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AppState, Firmenregel, Segment, Szenario, Gesamtstatistik } from './types';
-import { calcTotals, isoDate, parseIso, daysInRange, nextColor, hasOverlap } from './domain';
+import { AppState, Firmenregel, IsoDate, Segment, Szenario, Gesamtstatistik } from './types';
+import { calcTotals, addDays, nextColor, hasOverlap } from './domain';
 import { FIRMENREGELN } from './constants';
 
 const STORAGE_KEY = 'urlaubsplaner_v1';
@@ -12,7 +12,7 @@ function genId(): string {
 function defaultState(): AppState {
   const szenarioId = genId();
   return {
-    jahr: new Date().getFullYear(),
+    jahr: Temporal.Now.plainDateISO().year,
     region: 'DE-NW',
     kontingent: 30,
     aktiveSzenarioId: szenarioId,
@@ -130,13 +130,11 @@ export class PlannerStore {
     }));
   }
 
-  splitSegment(id: string, anDatum: string): void {
+  splitSegment(id: string, anDatum: IsoDate): void {
     const seg = this.aktiveSzenario.segmente.find(s => s.id === id);
     if (!seg || anDatum <= seg.start || anDatum > seg.end) return;
 
-    const vorTag = parseIso(anDatum);
-    vorTag.setDate(vorTag.getDate() - 1);
-    const endeErster = isoDate(vorTag);
+    const endeErster = addDays(anDatum, -1);
 
     const erster: Segment  = { ...seg, end: endeErster };
     const zweiter: Segment = { ...seg, id: genId(), start: anDatum };

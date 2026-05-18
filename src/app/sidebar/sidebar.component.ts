@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ElementRef, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { AppState, Segment, Segmentstats, Szenario } from '../core/types';
-import { calcSegment } from '../core/domain';
+import { AppState, IsoDate, Segment, Segmentstats, Szenario } from '../core/types';
+import { calcSegment, isoString } from '../core/domain';
 import { LOCALE } from '../core/constants';
 
 @Component({
@@ -167,8 +167,8 @@ export class SidebarComponent implements OnChanges {
     if (name) this.segmentUpdate.emit({ id, patch: { name } });
   }
 
-  adjustEnd(endIso: string, delta: number): string {
-    return Temporal.PlainDate.from(endIso).add({ days: delta }).toString();
+  adjustEnd(endIso: IsoDate, delta: number): IsoDate {
+    return isoString(Temporal.PlainDate.from(endIso).add({ days: delta }));
   }
 
   segEmoji(seg: Segment): string {
@@ -187,7 +187,7 @@ export class SidebarComponent implements OnChanges {
     if (/geburtstag|birthday/.test(n))                                        return '🎂';
     if (/familie|familien|family/.test(n))                                    return '👨‍👩‍👧';
     if (/erhol|wellness|\bspa\b|\bkur\b/.test(n))                             return '🧘';
-    const m = new Date(seg.start + 'T00:00:00').getMonth() + 1;
+    const m = Temporal.PlainDate.from(seg.start).month;
     if (m === 12 || m <= 2) return '❄️';
     if (m <= 4)             return '🌸';
     if (m <= 6)             return '🌿';
@@ -196,11 +196,11 @@ export class SidebarComponent implements OnChanges {
     return '🌧️';
   }
 
-  formatSegDatum(iso: string): string {
-    const jahr = parseInt(iso.substring(0, 4), 10);
+  formatSegDatum(iso: IsoDate): string {
+    const jahr = Temporal.PlainDate.from(iso).year;
     const mitJahr = this.state && jahr !== this.state.jahr;
     return new Intl.DateTimeFormat(LOCALE, {
       day: '2-digit', month: '2-digit', ...(mitJahr ? { year: 'numeric' } : {}),
-    }).format(new Date(iso + 'T00:00:00'));
+    }).format(Temporal.PlainDate.from(iso));
   }
 }

@@ -195,7 +195,7 @@ export class PanelComponent implements OnChanges {
   readonly monatOptionen = MONAT_LABELS.map((label, i) => ({
     value: i + 1,
     label,
-    kurzLabel: new Intl.DateTimeFormat('de-DE', { month: 'short' }).format(new Date(2024, i, 1)).replace('.', ''),
+    kurzLabel: new Intl.DateTimeFormat('de-DE', { month: 'short' }).format(new Temporal.PlainDate(2024, i + 1, 1)).replace('.', ''),
   }));
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -222,13 +222,13 @@ export class PanelComponent implements OnChanges {
 
   formatRegelDatum(r: Firmenregel): string {
     return new Intl.DateTimeFormat(LOCALE, { day: 'numeric', month: 'short' }).format(
-      new Date(2024, r.monat - 1, r.tag)
+      new Temporal.PlainDate(2024, r.monat, r.tag)
     );
   }
 
   formatDatumKurz(iso: string): string {
     return new Intl.DateTimeFormat(LOCALE, { day: '2-digit', month: '2-digit' }).format(
-      new Date(iso + 'T00:00:00')
+      Temporal.PlainDate.from(iso)
     );
   }
 

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { PlannerStore } from './core/planner.store';
+import { IsoDate } from './core/types';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { CalendarComponent } from './calendar/calendar.component';
@@ -61,8 +62,8 @@ export class AppComponent {
   onSegmentPending(data: { start: string; end: string }): void {
     const n = this.store.aktiveSzenario.segmente.length + 1;
     this.store.addSegment({
-      start: data.start,
-      end:   data.end,
+      start: data.start as IsoDate,
+      end:   data.end as IsoDate,
       name:  `Urlaub ${n}`,
       farbe: this.store.nextFarbe(),
     });

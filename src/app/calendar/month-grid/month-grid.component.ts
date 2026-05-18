@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { TagViewModel } from '../../core/types';
+import { IsoDate, TagViewModel } from '../../core/types';
 import { WOCHENTAG_LABELS, MONAT_LABELS } from '../../core/constants';
 
 @Component({
@@ -39,7 +39,7 @@ export class MonthGridComponent {
   @Input() jahr!: number;
   @Input() days!: TagViewModel[];
 
-  @Output() dayClick           = new EventEmitter<string>();
+  @Output() dayClick           = new EventEmitter<IsoDate>();
   @Output() segmentPointerDown = new EventEmitter<{ event: PointerEvent; id: string }>();
 
   readonly weekdayLabels = WOCHENTAG_LABELS;
@@ -50,15 +50,14 @@ export class MonthGridComponent {
 
   get firstDayOffset(): number {
     if (!this.days?.length) return 0;
-    const ersterTag = new Date(this.days[0].iso + 'T00:00:00');
-    // Montag = 0, Sonntag = 6
-    return (ersterTag.getDay() + 6) % 7;
+    // Temporal dayOfWeek: Mo=1 … Su=7 → subtract 1 for Mo=0 … Su=6
+    return Temporal.PlainDate.from(this.days[0].iso).dayOfWeek - 1;
   }
 
   buildTooltip(day: TagViewModel): string | null {
     const zeilen: string[] = [];
-    const fmt = (iso: string) => new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit' }).format(new Date(iso + 'T00:00:00'));
-    const tageZwischen = (a: string, b: string) => Math.round((new Date(b + 'T00:00:00').getTime() - new Date(a + 'T00:00:00').getTime()) / 86_400_000) + 1;
+    const fmt = (iso: string) => new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit' }).format(Temporal.PlainDate.from(iso));
+    const tageZwischen = (a: string, b: string) => Temporal.PlainDate.from(a).until(b).days + 1;
 
     if (day.istHeute) zeilen.push('Heute');
 

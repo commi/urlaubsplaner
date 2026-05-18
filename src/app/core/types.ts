@@ -1,10 +1,13 @@
 export interface Segment {
   id: string;
   name: string;
-  start: string;   // yyyy-mm-dd
-  end: string;     // yyyy-mm-dd
+  start: IsoDate;
+  end: IsoDate;
   farbe: string;   // hex
 }
+
+/** ISO date string yyyy-mm-dd. */
+export type IsoDate = `${number}-${number}-${number}`;
 
 export interface Szenario {
   id: string;
@@ -38,14 +41,14 @@ export interface Gesamtstatistik {
 }
 
 export interface TagViewModel {
-  iso: string;
+  iso: IsoDate;
   tag: number;
   istWochenende: boolean;
   istHeute: boolean;
   feiertagName: string | null;
   firmenregel: Firmenregel | null;
   istPflichturlaub: boolean;
-  segment: { id: string; farbe: string; name: string; start: string; end: string } | null;
+  segment: { id: string; farbe: string; name: string; start: IsoDate; end: IsoDate } | null;
   segmentPos: 'anfang' | 'ende' | 'mitte' | 'solo' | null;
   istAuswahl: boolean;
   auswahlPos: 'anfang' | 'ende' | 'mitte' | 'solo' | null;

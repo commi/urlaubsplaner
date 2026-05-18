@@ -33,11 +33,13 @@ export const LOCALE = 'de-DE';
 
 const _wt = new Intl.DateTimeFormat(LOCALE, { weekday: 'short' });
 // 2025-01-06 ist ein Montag
-export const WOCHENTAG_LABELS = Array.from({ length: 7 }, (_, i) =>
-  _wt.format(new Date(2025, 0, 6 + i)).replace('.', ''),
-);
+export const WOCHENTAG_LABELS = Array.from({ length: 7 }, (_, i) => {
+  const d = new Temporal.PlainDate(2025, 1, 6).add({ days: i });
+  return _wt.format(d).replace('.', '');
+});
 
 const _mo = new Intl.DateTimeFormat(LOCALE, { month: 'long' });
-export const MONAT_LABELS = Array.from({ length: 12 }, (_, i) =>
-  _mo.format(new Date(2025, i, 1)),
-);
+export const MONAT_LABELS = Array.from({ length: 12 }, (_, i) => {
+  const d = new Temporal.PlainDate(2025, i + 1, 1);
+  return _mo.format(d);
+});

@@ -1,10 +1,10 @@
 import {
   Component, Input, Output, EventEmitter, OnDestroy,
 } from '@angular/core';
-import { AppState, Segment, Szenario, TagViewModel } from '../core/types';
+import { AppState, IsoDate, Segment, Szenario, TagViewModel } from '../core/types';
 import {
   buildMonthDays, daysDiff, getHolidays,
-  hasOverlap, isoDate, parseIso, shiftSegment,
+  hasOverlap, shiftSegment,
 } from '../core/domain';
 import { MonthGridComponent } from './month-grid/month-grid.component';
 import { LOCALE } from '../core/constants';
@@ -41,20 +41,20 @@ import { LOCALE } from '../core/constants';
 export class CalendarComponent implements OnDestroy {
   @Input() state!: AppState;
 
-  @Output() segmentPending  = new EventEmitter<{ start: string; end: string }>();
-  @Output() segmentMove     = new EventEmitter<{ id: string; start: string; end: string }>();
+  @Output() segmentPending  = new EventEmitter<{ start: IsoDate; end: IsoDate }>();
+  @Output() segmentMove     = new EventEmitter<{ id: string; start: IsoDate; end: IsoDate }>();
   @Output() segmentFocus    = new EventEmitter<string>();
 
   readonly monate = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
   // View-State
-  auswahlStart: string | null = null;
+  auswahlStart: IsoDate | null = null;
 
   dragState: {
     segmentId: string;
-    originalStart: string;
-    originalEnd: string;
-    startIso: string;
+    originalStart: IsoDate;
+    originalEnd: IsoDate;
+    startIso: IsoDate;
   } | null = null;
 
   ngOnDestroy(): void {
@@ -84,7 +84,7 @@ export class CalendarComponent implements OnDestroy {
 
   // Zwei-Klick-Selektion 
 
-  onDayClick(iso: string): void {
+  onDayClick(iso: IsoDate): void {
     if (this.dragState) return;
 
     // Belegter Tag → Selektion nicht möglich, Segment fokussieren
@@ -152,14 +152,15 @@ export class CalendarComponent implements OnDestroy {
     this.dragState = null;
   };
 
-  private isoFromPointerEvent(event: PointerEvent): string | null {
-    const el = document.elementFromPoint(event.clientX, event.clientY);
-    return el?.closest('[data-iso]')?.getAttribute('data-iso') ?? null;
+  private isoFromPointerEvent(event: PointerEvent): IsoDate | null {
+    // We render [data-iso] ourselves, so we know it's always yyyy-mm-dd.
+    return (document.elementFromPoint(event.clientX, event.clientY)
+      ?.closest('[data-iso]')?.getAttribute('data-iso') ?? null) as IsoDate;
   }
 
-  formatDatum(iso: string): string {
+  formatDatum(iso: IsoDate): string {
     return new Intl.DateTimeFormat(LOCALE, { day: '2-digit', month: '2-digit' }).format(
-      new Date(iso + 'T00:00:00')
+      Temporal.PlainDate.from(iso)
     );
   }
 }
