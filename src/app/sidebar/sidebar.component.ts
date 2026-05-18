@@ -87,6 +87,18 @@ import { LOCALE } from '../core/constants';
                 [value]="seg.farbe"
                 (change)="segmentUpdate.emit({ id: seg.id, patch: { farbe: $any($event.target).value } })"
                 title="Farbe ändern">
+              <div class="seg-day-adjust">
+                <button class="icon-btn sm" title="Tag weniger"
+                  (mousedown)="$event.preventDefault()"
+                  (click)="segmentUpdate.emit({ id: seg.id, patch: { end: adjustEnd(seg.end, -1) } })">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <button class="icon-btn sm" title="Tag mehr"
+                  (mousedown)="$event.preventDefault()"
+                  (click)="segmentUpdate.emit({ id: seg.id, patch: { end: adjustEnd(seg.end, 1) } })">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
               <button class="icon-btn sm danger ms-auto"
                 (mousedown)="$event.preventDefault()"
                 (click)="segmentDelete.emit(seg.id)">
@@ -153,6 +165,10 @@ export class SidebarComponent implements OnChanges {
   onNameChange(id: string, event: Event): void {
     const name = (event.target as HTMLInputElement).value.trim();
     if (name) this.segmentUpdate.emit({ id, patch: { name } });
+  }
+
+  adjustEnd(endIso: string, delta: number): string {
+    return Temporal.PlainDate.from(endIso).add({ days: delta }).toString();
   }
 
   segEmoji(seg: Segment): string {
